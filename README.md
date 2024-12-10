@@ -131,6 +131,46 @@ public class QuizManager {
 
 
 
+#Quiz Taking
+
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
+import java.util.List;
+
+public class QuizTaking {
+    public static List<String> getQuestions(int quizId) {
+        List<String> questions = new ArrayList<>();
+        try (Connection conn = DatabaseConfig.getConnection()) {
+            String query = "SELECT question FROM questions WHERE quiz_id = ?";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setInt(1, quizId);
+            ResultSet rs = stmt.executeQuery();
+            while (rs.next()) {
+                questions.add(rs.getString("question"));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return questions;
+    }
+
+    public static void submitAnswer(int userId, int questionId, String answer) {
+        try (Connection conn = DatabaseConfig.getConnection()) {
+            String query = "INSERT INTO answers (user_id, question_id, answer) VALUES (?, ?, ?)";
+            PreparedStatement stmt = conn.prepareStatement(query);
+            stmt.setInt(1, userId);
+            stmt.setInt(2, questionId);
+            stmt.setString(3, answer);
+            stmt.executeUpdate();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+}
+
+
      
 
 
